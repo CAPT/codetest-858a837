@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= title
+  input#inputNumber(type='text', placeholder='enter a number',name='tfNumber')
+  input#inputSubmit(type='button', name='tfSubmit', value='Submit', onclick='onLoad(inputNumber.value, outputDiv);')
+  #outputDiv
+  <!-- /api/v1/tenfriendly/ -->
