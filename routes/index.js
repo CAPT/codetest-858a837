@@ -8,27 +8,66 @@ router.get('/', function(req, res, next) {
 
 /* GET tenfriendly number API */
 // TODO: factor this out into a dedicated file
+var scanTilTenOrMore = function(numArray) {
+  var cumulative = 0;
+  var accumulatedTenAt = -1;
+  for (i=0; i < numArray.length; i++)
+  {
+    cumulative = cumulative + numArray[i];
+    if (cumulative > 10) {
+      // numbers added up past 10 before equaling 10; this number
+      // is not 10-friendly.
+      break;
+    } else if (cumulative == 10) {
+      // numbers added up to 10; this number is 10-friendly so far.
+      // return the index at which we stopped
+      accumulatedTenAt = i;
+      break;
+    }
+  }
 
-var sum = function(a,b) { return a + b; }
+  return accumulatedTenAt;
+}
+var isTenFriendly = function(num) {
+  var x = num.toString();
+  var numAsArray = x.split("").map(Number);
+  var result = true;
+  var pass = true;
 
-var getSum = function(num) {
-  var x = num;
-  var splitNum = x.split("").map(Number);
-  return splitNum.reduce(sum);
+  while(numAsArray.length > 1) {
+    accumulatedTenAt = scanTilTenOrMore(numAsArray);
+    if (accumulatedTenAt == -1) {
+      // exit; this number is not ten-friendly because we
+      // went over ten before reaching ten
+      pass = false;
+      break;
+    }
+    else if (accumulatedTenAt == numAsArray.length - 1)
+    {
+      // we counted up to ten just as we reached the end of the remainder;
+      // this number is totally tenfriendly so exit.
+      break;
+    } else {
+      // remove the first char of the remainder since we've
+      // already scanned it.
+      numAsArray.shift();
+    }
+  }
+
+  return pass;
 }
 
-var getNumsThatSumToTen = function(num) {
+var getTenFriendlies = function(num) {
   var output = [];
-  for (i=19; i <= num; i++)
-  {
-    if (getSum(i.toString()) == 10)
-    {
-      output.push(i);
+  for (j=19; j <= num; j++) {
+    if (isTenFriendly(j)) {
+      output.push(j);
     }
   }
   return output;
 }
-var getTenFriendlies = function(inputNum) {
+
+var getTenFriendliesIfNumeric = function(inputNum) {
 
   var result = [];
 
@@ -36,7 +75,7 @@ var getTenFriendlies = function(inputNum) {
   var isNumber = !isNaN(inputNum) && (Math.round(inputNum) == inputNum);
 
   if (isNumber) {
-    result = getNumsThatSumToTen(inputNum);
+    result = getTenFriendlies(inputNum);
 
   }
 
@@ -45,7 +84,7 @@ var getTenFriendlies = function(inputNum) {
 
 router.get('/api/v1/math/tenfriendly/:inputString', function(req, res) {
   var inputString = req.params.inputString;
-  var outString = getTenFriendlies(inputString);
+  var outString = getTenFriendliesIfNumeric(inputString);
   res.json(outString);
 });
 module.exports = router;
