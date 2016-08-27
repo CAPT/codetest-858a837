@@ -13,16 +13,34 @@ router.get('/', function(req, res, next) {
 var getTenFriendlies = function(max) {
   var i = 2
   var calc = (i*9)+1;
-  var numbers = [];
+  //var output = [19,28,37,46,55,64,73,82,91];
+  var output = [];
+  var suppressOn = false;
+
   while (calc <= max) {
-    if (isTenFriendly(calc)) {
-      numbers.push(calc);
+
+    if (!suppressOn) output.push(calc);
+
+    // if calc is evenly divisible by 10 then temporarily suppress subsequent numbers
+    if (calc % 10 === 0) {
+      suppressOn = true;
     }
+
+    // if first and last digit add up to 10 then we've come to the end of the suppressed
+    // segment of the series, end suppression
+    var numString = calc.toString();
+    var firstDigit = parseInt(numString.slice(0,1));
+    var lastDigit = parseInt(numString.slice(-1));
+    if (firstDigit + lastDigit === 10) suppressOn = false;
+
     i++;
     calc = (i*9)+1;
   }
 
-  return numbers;
+  // above algorithm doesn't catch excluded number "100"
+  if (output.length > 9) output.splice(9,1);
+
+  return output;
 }
 
 var scanTilTenOrMore = function(numArray) {

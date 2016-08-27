@@ -17,7 +17,7 @@ var onLoad = function (valueToScan, outputDiv) {
         outputString = 'Error: ' + xhr.status; // An error occurred during the request.
       }
       var end = new Date() - start;
-      outputDiv.innerHTML = end + 'ms ' + outputString;
+      outputDiv.innerHTML = end + 'ms <br> ' + outputString.replace(/,/g,"<br>");
     }
   }
 
