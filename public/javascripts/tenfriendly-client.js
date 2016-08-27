@@ -1,5 +1,6 @@
 var onLoad = function (valueToScan, outputDiv) {
 
+  var start = new Date();
   var xhr = new XMLHttpRequest();
   var valToScan = valueToScan;
   xhr.open('GET', '/api/v1/math/tenfriendly/' + valueToScan, true);
@@ -15,7 +16,8 @@ var onLoad = function (valueToScan, outputDiv) {
       } else {
         outputString = 'Error: ' + xhr.status; // An error occurred during the request.
       }
-      outputDiv.innerHTML = outputString;
+      var end = new Date() - start;
+      outputDiv.innerHTML = end + 'ms ' + outputString;
     }
   }
 

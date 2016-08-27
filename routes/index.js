@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var cluster = require('cluster');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -8,6 +9,22 @@ router.get('/', function(req, res, next) {
 
 /* GET tenfriendly number API */
 // TODO: factor this out into a dedicated file
+
+var getTenFriendlies = function(max) {
+  var i = 2
+  var calc = (i*9)+1;
+  var numbers = [];
+  while (calc <= max) {
+    if (isTenFriendly(calc)) {
+      numbers.push(calc);
+    }
+    i++;
+    calc = (i*9)+1;
+  }
+
+  return numbers;
+}
+
 var scanTilTenOrMore = function(numArray) {
   var cumulative = 0;
   var accumulatedTenAt = -1;
@@ -57,16 +74,6 @@ var isTenFriendly = function(num) {
   return pass;
 }
 
-var getTenFriendlies = function(num) {
-  var output = [];
-  for (j=19; j <= num; j++) {
-    if (isTenFriendly(j)) {
-      output.push(j);
-    }
-  }
-  return output;
-}
-
 var getTenFriendliesIfNumeric = function(inputNum) {
 
   var result = [];
@@ -78,13 +85,16 @@ var getTenFriendliesIfNumeric = function(inputNum) {
     result = getTenFriendlies(inputNum);
 
   }
-
+  var cpuCount = require('os').cpus().length;
+  console.log("cpuCount = " + cpuCount);
+  console.log("result count is " + result.length);
   return JSON.stringify(result);
 }
 
 router.get('/api/v1/math/tenfriendly/:inputString', function(req, res) {
   var inputString = req.params.inputString;
   var outString = getTenFriendliesIfNumeric(inputString);
+
   res.json(outString);
 });
 module.exports = router;
